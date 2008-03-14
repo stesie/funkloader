@@ -16,19 +16,24 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-#ifndef PINCONFIG_H
-#define PINCONFIG_H
+#include <avr/io.h>
+#include "pinconfig.h"
 
-#define SPI_CS_RFM12_PORT PORTB
-#define SPI_CS_RFM12_DDR  DDRB
-#define SPI_CS_RFM12      PC2
+	.file	"rfm12_wait_read.S"
+	.text
+	
+.global rfm12_wait_read
+	.type	rfm12_wait_read, @function
+rfm12_wait_read:
 
-#define SPI_DDR           DDRB
-#define SPI_MOSI          PB3
-#define SPI_MISO          PB4
-#define SPI_SCK           PB5
+	/* Wait for the interrupt pin to become active. */
+.L0:
+	sbis	INT_PORT - 0x20, INT_PIN
+	rjmp	.L0
 
-#define INT_PORT          PIND
-#define INT_PIN           PD2
-
-#endif
+	ldi	r25, 0xb0
+	clr	r24
+	rcall	rfm12_trans
+	clr	r25
+	
+	ret

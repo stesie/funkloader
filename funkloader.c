@@ -28,7 +28,11 @@
 #define noinline __attribute__((noinline))
 
 extern unsigned short rfm12_trans (unsigned short);
+extern unsigned char  rfm12_wait_read (void);
 
+/* We need to store a whole page + page-number + crc */
+#define BUFSZ (SPM_PAGESIZE + 2)
+unsigned char funkloader_buf[BUFSZ];
 
 static void
 spi_init (void)
@@ -73,9 +77,34 @@ rfm12_init (void)
 }
 
 
+static void
+funkloader_rx ()
+{
+  rfm12_trans(0x82C8);		/* RX on */
+  rfm12_trans(0xCA81);		/* set FIFO mode */
+  rfm12_trans(0xCA83);		/* enable FIFO */
+
+  for (uint8_t i = 0; i < BUFSZ; i ++)
+    funkloader_buf[i] = rfm12_wait_read ();
+
+  rfm12_trans(0x8208);		/* RX off */
+}
+
 int
 main (void)
 {
   rfm12_init ();
+
+  for (;;) 
+    {
+      /* try to receive a packet */
+      funkloader_rx ();
+
+      /* check packet validity */
+
+      /* flash page */
+
+      /* transmit reply */
+    }
 
 }
