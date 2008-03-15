@@ -35,6 +35,7 @@ rfm12_trans:
 	sbi	SPI_CS_RFM12_PORT, SPI_CS_RFM12
 	
 	ret
+	.size	rfm12_trans, .-rfm12_trans
 
 
 	;; .global rfm12_trans_bh
@@ -58,8 +59,10 @@ rfm12_trans_bh:
 	sbis 	SPSR, SPIF
 	rjmp	.L2
 	ret
+	.size	rfm12_trans_bh, .-rfm12_trans_bh
 
-	
+
+
 .global rfm12_wait_tx
 	.type	rfm12_wait_tx, @function
 rfm12_wait_tx:
@@ -73,3 +76,4 @@ rfm12_wait_tx:
 	sbi	SPI_CS_RFM12_PORT, SPI_CS_RFM12
 	
 	ret
+	.size	rfm12_wait_tx, .-rfm12_wait_tx

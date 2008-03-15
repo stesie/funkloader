@@ -36,3 +36,5 @@ rfm12_wait_read:
 	ldi	r25, 0xb0
 	clr	r24
 	rjmp	rfm12_trans
+	.size	rfm12_wait_read, .-rfm12_wait_read
+

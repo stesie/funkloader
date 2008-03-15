@@ -64,7 +64,5 @@ funkloader_tx_reply:
 	rcall	rfm12_trans	; tx on
 
 	ret
-
-
-
+	.size	funkloader_tx_reply, .-funkloader_tx_reply
 
