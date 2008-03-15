@@ -28,9 +28,9 @@
 	.type	rfm12_wait_read, @function
 rfm12_wait_read:
 
-	/* Wait for the interrupt pin to become active. */
+	/* Wait for nIRQ pin to become low. */
 .L0:
-	sbis	INT_PORT, INT_PIN
+	sbic	INT_PORT, INT_PIN
 	rjmp	.L0
 
 	ldi	r25, 0xb0

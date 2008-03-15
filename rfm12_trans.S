@@ -69,9 +69,9 @@ rfm12_trans_bh:
 	.type	rfm12_wait_tx, @function
 rfm12_wait_tx:
 
-	/* Wait for the interrupt pin to become active. */
+	/* Wait for the nIRQ pin to become low. */
 .L0:
-	sbis	INT_PORT, INT_PIN
+	sbic	INT_PORT, INT_PIN
 	rjmp	.L0
 
 	rcall rfm12_trans_bh
