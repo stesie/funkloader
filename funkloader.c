@@ -32,6 +32,7 @@
 
 extern unsigned short rfm12_trans (unsigned short);
 extern unsigned char  rfm12_wait_read (void);
+extern void funkloader_tx_reply (void);
 
 /* We need to store magic byte + page-number + a whole page + crc */
 #define BUFSZ (SPM_PAGESIZE + 3)
@@ -129,6 +130,7 @@ funkloader_rx ()
   rfm12_trans(0x8208);		/* RX off */
 }
 
+
 int
 main (void)
 {
@@ -142,7 +144,7 @@ main (void)
 
       /* check packet validity */
       if (funkloader_buf[0] == MAGIC_LAUNCH_APP)
-	break;
+	break;			/* FIXME this doesn't send a reply */
 
       if (funkloader_buf[0] != MAGIC_FLASH_PAGE)
 	continue;		/* unknown magic, ignore. */
@@ -151,5 +153,8 @@ main (void)
       flash_page ();
 
       /* transmit reply */
+      rfm12_trans(0x8238);	/* TX on */
+      funkloader_tx_reply ();
+      rfm12_trans(0x8208);	/* TX off */
     }
 }
