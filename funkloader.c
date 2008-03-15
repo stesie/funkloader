@@ -20,7 +20,10 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
+#include <avr/pgmspace.h>
+#include <avr/boot.h>
 #include <avr/io.h>
+
 #include <util/delay.h>
 
 #include "pinconfig.h"
@@ -82,6 +85,38 @@ rfm12_init (void)
 
 
 static void
+flash_page (void)
+{
+#if SPM_PAGESIZE < 256
+  uint8_t i;
+#else
+  uint16_t i;
+#endif
+
+  uint16_t page = funkloader_buf[1] * SPM_PAGESIZE;
+
+  eeprom_busy_wait();
+
+  boot_page_erase(page);
+  boot_spm_busy_wait();
+
+  for(i = 0; i < SPM_PAGESIZE; i += 2) {
+    /* Set up little-endian word. */
+    uint16_t w = funkloader_buf[2 + i];
+    w += funkloader_buf[3 + i] << 8;
+        
+    boot_page_fill (page + i, w);
+  }
+
+  boot_page_write (page);
+  boot_spm_busy_wait();
+
+  /* Reenable RWW-section again. */
+  boot_rww_enable ();
+}
+
+
+static void
 funkloader_rx ()
 {
   rfm12_trans(0x82C8);		/* RX on */
@@ -113,6 +148,7 @@ main (void)
 	continue;		/* unknown magic, ignore. */
 
       /* flash page */
+      flash_page ();
 
       /* transmit reply */
     }
