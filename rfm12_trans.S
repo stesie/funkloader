@@ -28,11 +28,10 @@
 .global rfm12_trans
 	.type	rfm12_trans, @function
 rfm12_trans:
-	rcall rfm12_trans_bh
+	rcall	rfm12_trans_bh
 	in	r24, SPDR	; read lower reply byte
 	clr	r25
 
-	/* SPI_CS_RFM12_PORT |= _BV(SPI_CS_RFM12); */
 	sbi	SPI_CS_RFM12_PORT, SPI_CS_RFM12
 	
 	ret
@@ -41,8 +40,6 @@ rfm12_trans:
 	;; .global rfm12_trans_bh
 	.type	rfm12_trans_bh, @function
 rfm12_trans_bh:
-
-	/* SPI_CS_RFM12_PORT &= ~_BV(SPI_CS_RFM12); */
 	cbi 	SPI_CS_RFM12_PORT, SPI_CS_RFM12
 
 	/* send high byte first */
@@ -66,15 +63,13 @@ rfm12_trans_bh:
 .global rfm12_wait_tx
 	.type	rfm12_wait_tx, @function
 rfm12_wait_tx:
-
 	/* Wait for the nIRQ pin to become low. */
 .L0:
 	sbic	INT_PORT, INT_PIN
 	rjmp	.L0
 
-	rcall rfm12_trans_bh
+	rcall	rfm12_trans_bh
 
-	/* SPI_CS_RFM12_PORT |= _BV(SPI_CS_RFM12); */
 	sbi	SPI_CS_RFM12_PORT, SPI_CS_RFM12
 	
 	ret
