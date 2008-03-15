@@ -29,6 +29,7 @@
 #include "pinconfig.h"
 
 #define noinline __attribute__((noinline))
+#define naked    __attribute__((naked))
 
 extern unsigned short rfm12_trans (unsigned short);
 extern unsigned char  rfm12_wait_read (void);
@@ -159,7 +160,8 @@ crc_check (void)
   return crc_chk;
 }
 
-int
+
+naked int
 main (void)
 {
   spi_init ();
@@ -188,4 +190,13 @@ main (void)
       funkloader_tx_reply ();
       rfm12_trans(0x8208);	/* TX off */
     }
+  
+
+  /* jump into application now */
+
+  GICR = _BV(IVCE);	        /* prepare ivec change */
+  GICR = 0x00;                  /* change ivec */
+  
+  void (*jump_to_application)(void) = 0;
+  jump_to_application();
 }

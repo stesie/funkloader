@@ -19,22 +19,23 @@
 #define  __SFR_OFFSET 0
 #include <avr/io.h>
 
-#include "pinconfig.h"
 
-	.file	"exit.S"
-	.text
-	
-.global exit
-	.type	exit, @function
-exit:
+void __attribute__ ((naked, section(".init3"))) init_avr (void);
 
-	;; change interrupt vector to application
-	ldi	r24, (1 << IVCE)
-	out	GICR, r24
+void 
+init_avr (void)
+{
+  /* clear zero-register */
+  __asm volatile ("eor r1, r1 \n\t");
 
-	ldi	r30, 0
-	out	GICR, r30
+  /* clear sreg */
+  __asm volatile ("out __SREG__, r1 \n\t");
 
-	;; jump to application
-	ldi	r31, 0		; Z = 0x0000!
-	icall
+  /* initialize stack pointer */
+  __asm volatile ("ldi r28, lo8(%0) \n\t"
+		  "ldi r29, hi8(%0) \n\t"
+		  "out __SP_H__, r29     \n\t"
+		  "out __SP_L__, r28     \n\t"
+		  :
+		  : "i" (RAMEND));
+}
