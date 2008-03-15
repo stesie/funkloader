@@ -28,6 +28,10 @@
 	.type	funkloader_tx_reply, @function
 funkloader_tx_reply:
 
+	ldi     r24, 0x38
+	ldi     r25, 0x82
+	rcall	rfm12_trans	; tx on
+
 	ldi	r25, 0xB8	; tx data byte
 	
 	;; send preamble: AA, AA, AA, 2D, D4
@@ -42,18 +46,22 @@ funkloader_tx_reply:
 	ldi	r24, 0xD4
 	rcall	rfm12_wait_tx
 
-	;; first data byte: 0x23
-	ldi	r24, 0x23
+	;; first data byte
+	lds	r24, funkloader_buf
 	rcall 	rfm12_wait_tx
 
-	;; second data byte: checksum
-	lds	r24, funkloader_buf + SPM_PAGESIZE + 2
+	;; second data byte
+	mov	r24, r23
 	rcall	rfm12_wait_tx
 
-	;; postable: AA, AA
+	;; postamble: AA, AA
 	ldi	r24, 0xAA
 	rcall	rfm12_wait_tx
 	rcall	rfm12_wait_tx
+
+	ldi     r24, 0x08
+	ldi     r25, 0x82
+	rcall	rfm12_trans	; tx on
 
 	ret
 

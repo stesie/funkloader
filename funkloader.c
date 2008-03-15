@@ -173,8 +173,11 @@ main (void)
       funkloader_rx ();
 
       /* check packet validity */
-      if (funkloader_buf[0] == MAGIC_LAUNCH_APP)
-	break;			/* FIXME this doesn't send a reply */
+      if (funkloader_buf[0] == MAGIC_LAUNCH_APP) {
+        __asm volatile ("eor     r23, r23");
+        funkloader_tx_reply (); /* reply: 0x42 0x00 */
+	break;
+      }
 
       if (funkloader_buf[0] != MAGIC_FLASH_PAGE)
 	continue;		/* unknown magic, ignore. */
@@ -186,9 +189,10 @@ main (void)
       flash_page ();
 
       /* transmit reply */
-      rfm12_trans(0x8238);	/* TX on */
+      __asm volatile ("lds     r23, funkloader_buf + %0 + 2"
+                      :
+		      : "i" (SPM_PAGESIZE));
       funkloader_tx_reply ();
-      rfm12_trans(0x8208);	/* TX off */
     }
   
 
