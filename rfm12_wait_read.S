@@ -35,7 +35,4 @@ rfm12_wait_read:
 
 	ldi	r25, 0xb0
 	clr	r24
-	rcall	rfm12_trans
-	clr	r25
-	
-	ret
+	rjmp	rfm12_trans

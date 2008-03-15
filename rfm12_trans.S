@@ -25,12 +25,12 @@
 	.text
 
 
-	
 .global rfm12_trans
 	.type	rfm12_trans, @function
 rfm12_trans:
 	rcall rfm12_trans_bh
 	in	r24, SPDR	; read lower reply byte
+	clr	r25
 
 	/* SPI_CS_RFM12_PORT |= _BV(SPI_CS_RFM12); */
 	sbi	SPI_CS_RFM12_PORT, SPI_CS_RFM12
@@ -38,7 +38,6 @@ rfm12_trans:
 	ret
 
 
-	
 	;; .global rfm12_trans_bh
 	.type	rfm12_trans_bh, @function
 rfm12_trans_bh:
@@ -62,7 +61,6 @@ rfm12_trans_bh:
 	sbis 	SPSR, SPIF
 	rjmp	.L2
 	ret
-	
 
 	
 .global rfm12_wait_tx
