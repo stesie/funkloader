@@ -2,7 +2,7 @@ CC=avr-gcc
 OBJCOPY=avr-objcopy
 
 CPPFLAGS += -mmcu=atmega8 -DF_CPU=8000000UL 
-CFLAGS += -std=gnu99 -Os -g
+CFLAGS += -std=gnu99 -Os -g -Wall -W
 LDFLAGS += $(CFLAGS)
 
 all: funkloader.hex

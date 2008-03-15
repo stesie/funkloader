@@ -97,6 +97,7 @@ funkloader_rx ()
 int
 main (void)
 {
+  spi_init ();
   rfm12_init ();
 
   for (;;) 
