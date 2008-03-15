@@ -46,7 +46,8 @@ static void
 spi_init (void)
 {
   /* configure MOSI, SCK, lines as outputs */
-  SPI_DDR |= _BV(SPI_MOSI) | _BV(SPI_SCK);
+  SPI_DDR |= _BV(SPI_MOSI);
+  SPI_DDR |= _BV(SPI_SCK);
   SPI_DDR &= ~_BV(SPI_MISO);
 
   /* initialize spi link to rfm12 module */
