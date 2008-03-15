@@ -64,10 +64,8 @@ spi_init (void)
 static void
 rfm12_init (void)
 {
-  uint8_t i;
-
-  for (i = 0; i < 10; i ++)
-    _delay_ms (10);		/* wait until POR done */
+  /* Wait for POR to finish. */
+  while (INT_PORT & _BV (INT_PIN));
 
   rfm12_trans (0xC0E0);		/* AVR CLK: 10MHz */
   rfm12_trans (0x80D7);		/* Enable FIFO */
