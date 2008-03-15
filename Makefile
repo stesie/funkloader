@@ -7,7 +7,7 @@ LDFLAGS += $(CFLAGS)
 
 all: funkloader.hex
 
-funkloader: funkloader.o rfm12_trans.o rfm12_wait_read.o
+funkloader: funkloader.o rfm12_trans.o rfm12_wait_read.o exit.o
 
 clean:
 	rm -f funkloader *.o
