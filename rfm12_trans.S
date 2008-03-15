@@ -16,7 +16,9 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
+#define  __SFR_OFFSET 0
 #include <avr/io.h>
+
 #include "pinconfig.h"
 
 	.file	"rfm12_trans.S"
@@ -27,27 +29,27 @@
 rfm12_trans:
 
 	/* SPI_CS_RFM12_PORT &= ~_BV(SPI_CS_RFM12); */
-	cbi 	SPI_CS_RFM12_PORT - 0x20, SPI_CS_RFM12
+	cbi 	SPI_CS_RFM12_PORT, SPI_CS_RFM12
 
 	/* send high byte first */
-	out 	SPDR - 0x20, r25
+	out 	SPDR, r25
 
 .L1:
-	sbis 	SPSR - 0x20, SPIF
+	sbis 	SPSR, SPIF
 	rjmp	.L1
 
-	in	r25, SPDR - 0x20
+	in	r25, SPDR
 
 	/* send low byte */
-	out 	SPDR - 0x20, r24
+	out 	SPDR, r24
 
 .L2:
-	sbis 	SPSR - 0x20, SPIF
+	sbis 	SPSR, SPIF
 	rjmp	.L2
 
-	in	r24, SPDR - 0x20
+	in	r24, SPDR
 
 	/* SPI_CS_RFM12_PORT |= _BV(SPI_CS_RFM12); */
-	sbi	SPI_CS_RFM12_PORT - 0x20, SPI_CS_RFM12
+	sbi	SPI_CS_RFM12_PORT, SPI_CS_RFM12
 	
 	ret

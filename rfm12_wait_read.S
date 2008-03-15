@@ -16,7 +16,9 @@
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
+#define  __SFR_OFFSET 0
 #include <avr/io.h>
+
 #include "pinconfig.h"
 
 	.file	"rfm12_wait_read.S"
@@ -28,7 +30,7 @@ rfm12_wait_read:
 
 	/* Wait for the interrupt pin to become active. */
 .L0:
-	sbis	INT_PORT - 0x20, INT_PIN
+	sbis	INT_PORT, INT_PIN
 	rjmp	.L0
 
 	ldi	r25, 0xb0
