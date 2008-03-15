@@ -131,6 +131,35 @@ funkloader_rx ()
 }
 
 
+static void
+crc_update (unsigned char *crc, uint8_t data)
+{
+  for (uint8_t j = 0; j < 8; j ++)
+    {
+      if ((*crc ^ data) & 1)
+	*crc = (*crc >> 1) ^ 0x8c;
+      else
+        *crc = (*crc >> 1);
+
+      data = data >> 1;
+    }
+}
+
+
+static uint8_t
+crc_check (void)
+{
+  unsigned char crc_chk = 0;
+  unsigned char *ptr = funkloader_buf + 2;
+
+  for (uint8_t i = 0; i < SPM_PAGESIZE; i ++)
+    crc_update (&crc_chk, *(ptr ++));
+
+  /* subtract one from the other, this is far cheaper than comparation */
+  crc_chk -= *ptr;
+  return crc_chk;
+}
+
 int
 main (void)
 {
@@ -148,6 +177,9 @@ main (void)
 
       if (funkloader_buf[0] != MAGIC_FLASH_PAGE)
 	continue;		/* unknown magic, ignore. */
+
+      if (crc_check ())
+	continue;		/* crc invalid */
 
       /* flash page */
       flash_page ();
