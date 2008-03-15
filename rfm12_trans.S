@@ -23,10 +23,25 @@
 
 	.file	"rfm12_trans.S"
 	.text
+
+
 	
 .global rfm12_trans
 	.type	rfm12_trans, @function
 rfm12_trans:
+	rcall rfm12_trans_bh
+	in	r24, SPDR	; read lower reply byte
+
+	/* SPI_CS_RFM12_PORT |= _BV(SPI_CS_RFM12); */
+	sbi	SPI_CS_RFM12_PORT, SPI_CS_RFM12
+	
+	ret
+
+
+	
+	;; .global rfm12_trans_bh
+	.type	rfm12_trans_bh, @function
+rfm12_trans_bh:
 
 	/* SPI_CS_RFM12_PORT &= ~_BV(SPI_CS_RFM12); */
 	cbi 	SPI_CS_RFM12_PORT, SPI_CS_RFM12
@@ -46,8 +61,20 @@ rfm12_trans:
 .L2:
 	sbis 	SPSR, SPIF
 	rjmp	.L2
+	ret
+	
 
-	in	r24, SPDR
+	
+.global rfm12_wait_tx
+	.type	rfm12_wait_tx, @function
+rfm12_wait_tx:
+
+	/* Wait for the interrupt pin to become active. */
+.L0:
+	sbis	INT_PORT, INT_PIN
+	rjmp	.L0
+
+	rcall rfm12_trans_bh
 
 	/* SPI_CS_RFM12_PORT |= _BV(SPI_CS_RFM12); */
 	sbi	SPI_CS_RFM12_PORT, SPI_CS_RFM12

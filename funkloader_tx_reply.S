@@ -60,34 +60,3 @@ funkloader_tx_reply:
 
 
 
-	
-.global rfm12_wait_tx
-	.type	rfm12_wait_tx, @function
-rfm12_wait_tx:
-
-	/* Wait for the interrupt pin to become active. */
-.L0:
-	sbis	INT_PORT, INT_PIN
-	rjmp	.L0
-
-	/* SPI_CS_RFM12_PORT &= ~_BV(SPI_CS_RFM12); */
-	cbi 	SPI_CS_RFM12_PORT, SPI_CS_RFM12
-
-	/* send high byte first */
-	out 	SPDR, r25
-
-.L1:
-	sbis 	SPSR, SPIF
-	rjmp	.L1
-
-	/* send low byte */
-	out 	SPDR, r24
-
-.L2:
-	sbis 	SPSR, SPIF
-	rjmp	.L2
-
-	/* SPI_CS_RFM12_PORT |= _BV(SPI_CS_RFM12); */
-	sbi	SPI_CS_RFM12_PORT, SPI_CS_RFM12
-	
-	ret
