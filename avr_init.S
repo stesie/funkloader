@@ -54,3 +54,5 @@ avr_init:
 	mov	r30, r1
 	mov	r31, r1
 	icall
+
+	.size	avr_init, .-avr_init
