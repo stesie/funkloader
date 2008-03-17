@@ -10,7 +10,7 @@ LDFLAGS += $(CFLAGS) -nostdlib
 all: funkloader.hex
 
 funkloader: funkloader.o rfm12_trans.o rfm12_wait_read.o \
-	funkloader_tx_reply.o memconfig.o
+	funkloader_tx_reply.o avr_init.o
 	$(CC) -o $@ $(LDFLAGS) $^
 	$(SIZE) $@
 

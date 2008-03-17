@@ -19,23 +19,38 @@
 #define  __SFR_OFFSET 0
 #include <avr/io.h>
 
+#include "pinconfig.h"
 
-void __attribute__ ((naked, section(".init3"))) init_avr (void);
+	.file	"avr_init.S"
+	.text
+	.section        .init3,"ax",@progbits
+	
+.global avr_init
+	.type	avr_init, @function
+avr_init:
+	;; clear r1
+	eor	r1, r1
 
-void 
-init_avr (void)
-{
-  /* clear zero-register */
-  __asm volatile ("eor r1, r1 \n\t");
+	;; initialize stack pointer
+	ldi	r28, lo8(RAMEND)
+	ldi	r29, hi8(RAMEND)
+	out	SPH, r29
+	out	SPL, r28
 
-  /* clear sreg */
-  __asm volatile ("out __SREG__, r1 \n\t");
+	;; clear SREG
+	out	SREG, r1
 
-  /* initialize stack pointer */
-  __asm volatile ("ldi r28, lo8(%0) \n\t"
-		  "ldi r29, hi8(%0) \n\t"
-		  "out __SP_H__, r29     \n\t"
-		  "out __SP_L__, r28     \n\t"
-		  :
-		  : "i" (RAMEND));
-}
+	;; call main func
+	rcall	funkloader_main
+	nop			; fall through into application call
+
+	;; timer1 overflow vector
+	ldi	r16, _BV (IVCE)
+	out	GICR, r16	; enable change reset vector
+
+	out	GICR, r1	; change reset vector to application
+
+	;; jump to application reset vector
+	mov	r30, r1
+	mov	r31, r1
+	icall

@@ -23,6 +23,7 @@
 #include <avr/pgmspace.h>
 #include <avr/boot.h>
 #include <avr/io.h>
+#include <avr/interrupt.h>
 
 #include <util/delay.h>
 
@@ -42,6 +43,20 @@ unsigned char funkloader_buf[BUFSZ];
 #define MAGIC_FLASH_PAGE 0x23
 #define MAGIC_LAUNCH_APP 0x42
 
+
+static void
+timer_init (void)
+{
+  /* select clk/256 prescaler,
+     at 8 MHz this means 31250 ticks per seconds, i.e. total timeout
+     of 2.09 seconds. */
+  TCCR1B = _BV (CS12);
+
+  /* enable overflow interrupt of Timer 1 */
+  TIMSK = _BV (TOIE1);
+
+  sei ();
+}
 
 static void
 spi_init (void)
@@ -161,9 +176,10 @@ crc_check (void)
 }
 
 
-naked int
-main (void)
+naked void
+funkloader_main (void)
 {
+  timer_init ();
   spi_init ();
   rfm12_init ();
 
@@ -185,6 +201,10 @@ main (void)
       if (crc_check ())
 	continue;		/* crc invalid */
 
+      /* clear global interrupt flag, so timer interrupt cannot
+         call the application any longer. */
+      cli ();
+
       /* flash page */
       flash_page ();
 
@@ -195,12 +215,7 @@ main (void)
       funkloader_tx_reply ();
     }
   
-
-  /* jump into application now */
-
-  GICR = _BV(IVCE);	        /* prepare ivec change */
-  GICR = 0x00;                  /* change ivec */
-  
-  void (*jump_to_application)(void) = 0;
-  jump_to_application();
+  /* leave here, thusly jump into application now */
+  __asm volatile ("ret");
 }
+
