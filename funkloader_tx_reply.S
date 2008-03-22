@@ -46,6 +46,10 @@ funkloader_tx_reply:
 	ldi	r24, 0xD4
 	rcall	rfm12_wait_tx
 
+	;; packet length
+	ldi     r24, 2
+	rcall	rfm12_wait_tx
+
 	;; first data byte
 	lds	r24, funkloader_buf
 	rcall 	rfm12_wait_tx
