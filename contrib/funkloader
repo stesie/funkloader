@@ -102,13 +102,13 @@ while 1:
     if reply[1] != sendchunk[-1]:
         continue
 
+    if chunklen < pagesize:
+        break
+
     ## prepare to send next byte ...
     chunkno += 1
     chunk = handle.read (pagesize)
     chunklen = len (chunk)
-
-    if chunklen < pagesize:
-        break
 
 while 1:
     sendchunk = chr (0x42)
