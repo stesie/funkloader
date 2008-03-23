@@ -32,3 +32,5 @@ funkloader.o: funkloader.c pinconfig.h
 funkloader_tx_reply.o: funkloader_tx_reply.S pinconfig.h
 rfm12_trans.o: rfm12_trans.S pinconfig.h
 rfm12_wait_read.o: rfm12_wait_read.S pinconfig.h
+
+.PHONY:	fuse load clean
