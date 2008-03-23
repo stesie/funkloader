@@ -16,7 +16,7 @@ funkloader: funkloader.o rfm12_trans.o rfm12_wait_read.o \
 	$(SIZE) $@
 
 clean:
-	rm -f funkloader *.o
+	rm -f funkloader *.o *.s *.hex *~
 
 %.hex: %
 	$(OBJCOPY) -O ihex -R .eeprom $< $@
