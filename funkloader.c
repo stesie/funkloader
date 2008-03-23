@@ -139,8 +139,16 @@ funkloader_rx ()
   rfm12_trans(0xCA81);		/* set FIFO mode */
   rfm12_trans(0xCA83);		/* enable FIFO */
 
-  for (uint8_t i = 0; i < BUFSZ; i ++)
-    funkloader_buf[i] = rfm12_wait_read ();
+  uint8_t i = rfm12_wait_read ();
+  uint8_t *ptr = funkloader_buf;
+  
+  if (i > BUFSZ) {
+    *ptr = 0; 
+    return;
+  }
+
+  while (i --)
+    *(ptr ++) = rfm12_wait_read ();
 
   rfm12_trans(0x8208);		/* RX off */
 }
