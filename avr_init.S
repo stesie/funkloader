@@ -48,6 +48,10 @@ avr_init:
 
 	out	GICR, r1	; change reset vector to application
 
+	;; disable timer1 overflow interrupt, so the application 
+	;; may call `sei' safely
+	out	TIMSK, r1
+
 	;; jump to application reset vector
 	mov	r30, r1
 	mov	r31, r1
