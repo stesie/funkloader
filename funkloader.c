@@ -43,7 +43,6 @@ unsigned char funkloader_buf[BUFSZ];
 #define MAGIC_FLASH_PAGE 0x23
 #define MAGIC_LAUNCH_APP 0x42
 
-
 static void
 timer_init (void)
 {
@@ -141,15 +140,15 @@ funkloader_rx ()
 
   uint8_t i = rfm12_wait_read ();
   uint8_t *ptr = funkloader_buf;
-  
-  if (i > BUFSZ) {
-    *ptr = 0; 
-    return;
-  }
+  *ptr = 0; 
+
+  if (i > BUFSZ)
+    goto out;
 
   while (i --)
     *(ptr ++) = rfm12_wait_read ();
 
+ out:
   rfm12_trans(0x8208);		/* RX off */
 }
 
@@ -183,7 +182,6 @@ crc_check (void)
   return crc_chk;
 }
 
-
 naked void
 funkloader_main (void)
 {
@@ -207,7 +205,7 @@ funkloader_main (void)
 	continue;		/* unknown magic, ignore. */
 
       if (crc_check ())
-	continue;		/* crc invalid */
+        continue;		/* crc invalid */
 
       /* clear global interrupt flag, so timer interrupt cannot
          call the application any longer. */
@@ -220,6 +218,7 @@ funkloader_main (void)
       __asm volatile ("lds     r23, funkloader_buf + %0 + 2"
                       :
 		      : "i" (SPM_PAGESIZE));
+
       funkloader_tx_reply ();
     }
   
