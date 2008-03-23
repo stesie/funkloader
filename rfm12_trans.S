@@ -41,6 +41,7 @@ rfm12_trans:
 	;; .global rfm12_trans_bh
 	.type	rfm12_trans_bh, @function
 rfm12_trans_bh:
+	sbi     SPCR, SPR0	; slow spi communication down
 	cbi 	SPI_CS_RFM12_PORT, SPI_CS_RFM12
 
 	/* send high byte first */
@@ -50,7 +51,7 @@ rfm12_trans_bh:
 	sbis 	SPSR, SPIF
 	rjmp	.L1
 
-	in	r25, SPDR
+	; in	r25, SPDR
 
 	/* send low byte */
 	out 	SPDR, r24
