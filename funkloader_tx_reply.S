@@ -27,7 +27,10 @@
 .global funkloader_tx_reply
 	.type	funkloader_tx_reply, @function
 funkloader_tx_reply:
-
+#ifdef STATUS_LED_TX
+	sbi	STATUS_LED_PORT, STATUS_LED_TX
+#endif
+	
 	ldi     r24, 0x38
 	ldi     r25, 0x82
 	rcall	rfm12_trans	; tx on
@@ -66,6 +69,10 @@ funkloader_tx_reply:
 	ldi     r24, 0x08
 	ldi     r25, 0x82
 	rcall	rfm12_trans	; tx off
+
+#ifdef STATUS_LED_TX
+	cbi	STATUS_LED_PORT, STATUS_LED_TX
+#endif
 
 	ret
 	.size	funkloader_tx_reply, .-funkloader_tx_reply

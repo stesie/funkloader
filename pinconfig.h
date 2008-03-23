@@ -31,4 +31,11 @@
 #define INT_PORT          PIND
 #define INT_PIN           PD2
 
+/* If you don't want to have status LEDs, simply comment out these */
+#define STATUS_LED_PORT   PORTB
+#define STATUS_LED_DDR    DDRB
+#define STATUS_LED_TX     PB6
+#define STATUS_LED_RX     PB7
+
+
 #endif

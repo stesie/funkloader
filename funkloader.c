@@ -142,6 +142,10 @@ funkloader_rx ()
   uint8_t *ptr = funkloader_buf;
   *ptr = 0; 
 
+#ifdef STATUS_LED_RX
+  STATUS_LED_PORT |= _BV (STATUS_LED_RX);
+#endif
+
   if (i > BUFSZ)
     goto out;
 
@@ -150,6 +154,10 @@ funkloader_rx ()
 
  out:
   rfm12_trans(0x8208);		/* RX off */
+
+#ifdef STATUS_LED_RX
+  STATUS_LED_PORT &= ~_BV (STATUS_LED_RX);
+#endif
 }
 
 
@@ -188,6 +196,14 @@ funkloader_main (void)
   timer_init ();
   spi_init ();
   rfm12_init ();
+
+#ifdef STATUS_LED_RX
+  STATUS_LED_DDR |= _BV (STATUS_LED_RX);
+#endif
+
+#ifdef STATUS_LED_TX
+  STATUS_LED_DDR |= _BV (STATUS_LED_TX);
+#endif
 
   for (;;) 
     {
