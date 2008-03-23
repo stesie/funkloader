@@ -35,7 +35,6 @@
 extern unsigned short rfm12_trans (unsigned short);
 extern unsigned char  rfm12_wait_read (void);
 extern void funkloader_tx_reply (void);
-extern void flash_page (void);
 
 /* We need to store magic byte + page-number + a whole page + crc */
 #define BUFSZ (SPM_PAGESIZE + 3)
@@ -100,7 +99,36 @@ rfm12_init (void)
 }
 
 
-  uint8_t j = 1;
+static void
+flash_page (void)
+{
+#if SPM_PAGESIZE < 256
+  uint8_t i;
+#else
+  uint16_t i;
+#endif
+
+  uint16_t page = funkloader_buf[1] * SPM_PAGESIZE;
+
+  eeprom_busy_wait();
+
+  boot_page_erase(page);
+  boot_spm_busy_wait();
+
+  for(i = 0; i < SPM_PAGESIZE; i += 2) {
+    /* Set up little-endian word. */
+    uint16_t w = funkloader_buf[2 + i];
+    w += funkloader_buf[3 + i] << 8;
+        
+    boot_page_fill (page + i, w);
+  }
+
+  boot_page_write (page);
+  boot_spm_busy_wait();
+
+  /* Reenable RWW-section again. */
+  boot_rww_enable ();
+}
 
 
 static void

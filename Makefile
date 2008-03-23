@@ -11,7 +11,7 @@ LDFLAGS += $(CFLAGS) -nostdlib -Wl,--section-start=.text=0x1E00
 all: funkloader.hex
 
 funkloader: funkloader.o rfm12_trans.o rfm12_wait_read.o \
-	funkloader_tx_reply.o avr_init.o flash_page.o
+	funkloader_tx_reply.o avr_init.o
 	$(CC) -o $@ $(LDFLAGS) $^
 	$(SIZE) $@
 
