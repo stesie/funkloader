@@ -19,8 +19,6 @@
 #define  __SFR_OFFSET 0
 #include <avr/io.h>
 
-#include "pinconfig.h"
-
 	.file	"avr_init.S"
 	.text
 	.section        .init3,"ax",@progbits

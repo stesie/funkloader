@@ -27,3 +27,8 @@ load: funkloader.hex
 fuse:
 	$(AVRDUDE) -p m8 -U lfuse:w:0xa4:m
 	$(AVRDUDE) -p m8 -U hfuse:w:0xdc:m
+
+funkloader.o: funkloader.c pinconfig.h
+funkloader_tx_reply.o: funkloader_tx_reply.S pinconfig.h
+rfm12_trans.o: rfm12_trans.S pinconfig.h
+rfm12_wait_read.o: rfm12_wait_read.S pinconfig.h
