@@ -119,7 +119,7 @@ while 1:
     except:
         reply = ""
 
-    if len (reply) ! = 2:
+    if len (reply) != 2:
         continue
 
     if ord (reply[0]) != 0x42:
