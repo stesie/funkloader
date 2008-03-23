@@ -65,7 +65,7 @@ funkloader_tx_reply:
 
 	ldi     r24, 0x08
 	ldi     r25, 0x82
-	rcall	rfm12_trans	; tx on
+	rcall	rfm12_trans	; tx off
 
 	ret
 	.size	funkloader_tx_reply, .-funkloader_tx_reply
