@@ -3,6 +3,7 @@ import socket
 import sys
 import binascii
 import optparse
+import time
 
 pagesize = 64 # suitable for atmega8
 
@@ -43,7 +44,7 @@ except IOError:
     print "%s: unable to open file." % (options.file)
     sys.exit(1)
 
-s.settimeout (1)
+s.settimeout (.5)
 
 ##############################################################################
 
@@ -109,6 +110,10 @@ while 1:
     chunkno += 1
     chunk = handle.read (pagesize)
     chunklen = len (chunk)
+
+    # wait a bit to not stress the bridge to much 
+    # (and keep things reliable *g*)
+    time.sleep(.05)
 
 while 1:
     sendchunk = chr (0x42)
