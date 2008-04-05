@@ -94,7 +94,7 @@ rfm12_init (void)
 
   rfm12_trans (0xa620);		/* rfm12_setfreq(RFM12FREQ(433.92)) */
   rfm12_trans (0x94ac);		/* rfm12_setbandwidth(5, 1, 4); */
-  rfm12_trans (0xc609);		/* rfm12_setbaud(34482); */
+  rfm12_trans (0xc627);		/* rfm12_setbaud(8620); */
   rfm12_trans (0x9820);		/* rfm12_setpower(0, 2); */
 }
 
