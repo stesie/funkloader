@@ -49,17 +49,24 @@ timer_init (void)
 #if F_CPU == 8000000
   /* select clk/256 prescaler,
      at 8 MHz this means 31250 ticks per seconds, i.e. total timeout
-     of 2.09 seconds. */
+     of 2.09 seconds (-> timer overflow vector) */
   TCCR1B = _BV (CS12);
-#elif F_CPU == 2000000
-  /* select clk/64 prescaler */
+
+  /* enable overflow interrupt of Timer 1 */
+  TIMSK1 = _BV (TOIE1);
+  
+#elif F_CPU == 1000000
+  /* select clk/8 prescaler -> 15625 ticks per second*/
   TCCR1B = _BV (CS10) | _BV (CS11);
+
+  /* compare match in 2 seconds */
+  OCR1B = 15625 * 2;
+
+  /* enable compare match B interrupt */
+  TIMSK1 = _BV (OCIE1B);
 #else
 # error "unsupported F_CPU value."
 #endif
-
-  /* enable overflow interrupt of Timer 1 */
-  TIMSK = _BV (TOIE1);
 
   sei ();
 }
