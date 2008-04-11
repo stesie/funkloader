@@ -74,20 +74,17 @@ timer_init (void)
 static void
 spi_init (void)
 {
-  /* configure MOSI, SCK, lines as outputs */
-  SPI_DDR |= _BV(SPI_MOSI);
-  SPI_DDR |= _BV(SPI_SCK);
-  SPI_DDR &= ~_BV(SPI_MISO);
+#if F_CPU == 8000000
+  /* enable spi, set master and clock modes (f/16) -> 500 kHz spi freq */
+  SPCR = _BV(SPE) | _BV(MSTR) | _BV (SPR0);
 
-  /* initialize spi link to rfm12 module */
-  SPI_CS_RFM12_DDR |= _BV(SPI_CS_RFM12);
-
-  /* Enable the pullup */
-  SPI_CS_RFM12_PORT |= _BV(SPI_CS_RFM12);
-
-  /* enable spi, set master and clock modes (f/2) */
+#elif F_CPU == 1000000
+  /* enable spi, set master and clock modes (f/2) -> 500 kHz spi freq */
   SPCR = _BV(SPE) | _BV(MSTR);
   SPSR = _BV(SPI2X);
+#else
+#  error
+#endif
 }
 
 

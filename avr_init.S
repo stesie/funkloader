@@ -18,6 +18,7 @@
 
 #define  __SFR_OFFSET 0
 #include <avr/io.h>
+#include "pinconfig.h"
 
 	.file	"avr_init.S"
 	.text
@@ -38,19 +39,30 @@ avr_init:
 	;; clear SREG
 	out	SREG, r1
 
+	;; configure MOSI, SCK, lines as outputs
+	sbi	SPI_DDR, SPI_MOSI
+	sbi	SPI_DDR, SPI_SCK
+	cbi 	SPI_DDR, SPI_MISO
+
+	;; configure chip-select and pull up
+	sbi	SPI_CS_RFM12_DDR, SPI_CS_RFM12
+	sbi	SPI_CS_RFM12_PORT, SPI_CS_RFM12
+
 	;; call main func
 	rcall	funkloader_main
-	nop			; fall through into application call
 
-	;; timer1 overflow vector
+	;; timer1 compare match vector  (= vector 13)
+	nop			; fall through
+	
+	;; timer1 overflow vector  (= vector 14)
 	ldi	r16, _BV (IVCE)
-	out	GICR, r16	; enable change reset vector
+	out	MCUCR, r16	; enable change reset vector
 
-	out	GICR, r1	; change reset vector to application
+	out	MCUCR, r1	; change reset vector to application
 
 	;; disable timer1 overflow interrupt, so the application 
 	;; may call `sei' safely
-	out	TIMSK, r1
+	sts	TIMSK1, r1
 
 	;; jump to application reset vector
 	mov	r30, r1
