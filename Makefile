@@ -1,12 +1,20 @@
+FREQ=8000000UL
+
 CC=avr-gcc
 OBJCOPY=avr-objcopy
 STRIP=avr-strip
 SIZE=avr-size
 AVRDUDE=avrdude
 
-CPPFLAGS += -mmcu=atmega8 -DF_CPU=8000000UL 
+CPPFLAGS += -mmcu=atmega8 -DF_CPU=$(FREQ)
 CFLAGS += -std=gnu99 -Os -g -Wall -W
 LDFLAGS += $(CFLAGS) -nostdlib -Wl,--section-start=.text=0x1E00
+
+ifeq ($(FREQ),8000000UL)
+  lfuse=0xa4
+else ifeq ($(FREQ),2000000UL)
+  lfuse=0xa2
+endif
 
 all: funkloader.hex
 
@@ -25,8 +33,12 @@ load: funkloader.hex
 	$(AVRDUDE) -p m8 -U flash:w:$<
 
 fuse:
-	$(AVRDUDE) -p m8 -U lfuse:w:0xa4:m
+ifeq ($(lfuse),)
+	@echo "don't know what to fuse, unsupported frequency."
+else
+	$(AVRDUDE) -p m8 -U lfuse:w:$(lfuse):m
 	$(AVRDUDE) -p m8 -U hfuse:w:0xdc:m
+endif
 
 funkloader.o: funkloader.c pinconfig.h
 funkloader_tx_reply.o: funkloader_tx_reply.S pinconfig.h

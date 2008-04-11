@@ -46,10 +46,17 @@ unsigned char funkloader_buf[BUFSZ];
 static void
 timer_init (void)
 {
+#if F_CPU == 8000000
   /* select clk/256 prescaler,
      at 8 MHz this means 31250 ticks per seconds, i.e. total timeout
      of 2.09 seconds. */
   TCCR1B = _BV (CS12);
+#elif F_CPU == 2000000
+  /* select clk/64 prescaler */
+  TCCR1B = _BV (CS10) | _BV (CS11);
+#else
+# error "unsupported F_CPU value."
+#endif
 
   /* enable overflow interrupt of Timer 1 */
   TIMSK = _BV (TOIE1);
