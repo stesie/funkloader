@@ -8,7 +8,7 @@ CPPFLAGS += -mmcu=atmega8 -DF_CPU=8000000UL
 CFLAGS += -std=gnu99 -Os -g -Wall -W
 LDFLAGS += $(CFLAGS) -nostdlib -Wl,--section-start=.text=0x1E00
 
-all: funkloader.hex
+all: funkloader.hex funkloader.bin
 
 funkloader: funkloader.o rfm12_trans.o rfm12_wait_read.o \
 	funkloader_tx_reply.o avr_init.o
@@ -16,10 +16,13 @@ funkloader: funkloader.o rfm12_trans.o rfm12_wait_read.o \
 	$(SIZE) $@
 
 clean:
-	rm -f funkloader *.o *.s *.hex *~
+	rm -f funkloader *.o *.s funkloader.hex funkloader.bin *~
 
 %.hex: %
 	$(OBJCOPY) -O ihex -R .eeprom $< $@
+
+%.bin: %
+	$(OBJCOPY) -O binary -R .eeprom $< $@
 
 load: funkloader.hex
 	$(AVRDUDE) -p m8 -U flash:w:$<
