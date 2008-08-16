@@ -49,6 +49,10 @@ funkloader_tx_reply:
 	ldi	r24, 0xD4
 	rcall	rfm12_wait_tx
 
+	;; packet length (msb)
+	clr	r24
+	rcall	rfm12_wait_tx
+
 	;; packet length
 	ldi     r24, 2
 	rcall	rfm12_wait_tx
